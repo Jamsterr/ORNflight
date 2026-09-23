@@ -13,15 +13,15 @@ float tuneI = 1;
 float tuneD = 1;
 
 //-- pins may be subject to change
-const int SDI = 10;
-const int SDO = 11;
-const int clock = 12;
-const int select = 13;
+const int SDI = 15;
+const int SDO = 2;
+const int tick = 4;
+const int pick = 16;
 
-const int motor1 = 6;
-const int motor2 = 7;Ö
-const int motor3 = 8;
-const int motor4 = 9;
+const int motor1 = 13;
+const int motor2 = 12;
+const int motor3 = 14;
+const int motor4 = 27;
 //--
 
 const char* ssid = "placeholderSsid";
@@ -30,12 +30,12 @@ const char* pass = "placeholderPass";
 float readings[20] = { };
 
 void setup() {
-    Serial.Begin(115200);
+    Serial.begin(115200);
 
     pinMode(SDI, INPUT);
     pinMode(SDO, OUTPUT);
-    pinMode(clock, OUTPUT);
-    pinMode(select, OUTPUT);
+    pinMode(tick, OUTPUT);
+    pinMode(pick, OUTPUT);
 
     pinMode(motor1, OUTPUT);
     pinMode(motor2, OUTPUT);
@@ -43,14 +43,18 @@ void setup() {
     pinMode(motor4, OUTPUT);
 
     //webserver init, connect to device
-    WiFi.begin(ssid, pass);
-    Serial.WriteLine(ssid);
-    Serial.WriteLine(pass);
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(ssid, pass, 1, 1);
 
-    while(WiFi.status != WL_CONNECTED) {
+    Serial.println(ssid);
+    Serial.println(pass);
+    Serial.println(WiFi.localIP());  
+
+    while(WiFi.status() != WL_CONNECTED) {
         delay(500);
-        Serial.printLine()
+        Serial.print("waiting.");
     }
+    Serial.println("connected");
     //sensor checks and calibration
 }
 
@@ -61,6 +65,7 @@ void loop() {
     //read sensor data (SPI)
     //will probably need a storage of x previous readings for stabilization
     //stabilize()
+    delay(500);
 }
 
 void throttle(int amp) { //might be put inline along with jaw
@@ -73,7 +78,7 @@ void jaw(int amp) {
     //sets relative difference bewteen ccw and cw motor pairs in order to rotate
 }
 
-void stabilize(float angleX, float angleY) { //handles stabilizing, roll and pitch
+void stabilize(float target, float reading) { //handles stabilizing, roll and pitch
     //calc error from desired v actual angle
     //output calculated with error in integral, derivative* and proportional dimensions'
     //translate output value into motor adjustment
