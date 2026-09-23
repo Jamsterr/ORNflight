@@ -1,5 +1,6 @@
 # Notes
+Uses SPI for sensor reading and a webserver for remote controlling.
 
-# Instrusctions
+# Instructions
 
 # BOM
