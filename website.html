@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">;
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ORNflight 0.1</title>
+    </head>
+
+<body>
+    <div class="joystick" id="leftStick" data-x="0" data-y="0"></div>
+    <div class="joystick" id="rightStick" data-val="0"></div>
+
+    <script>
+
+        let joysticks = document.getElementsByClassName("joystick");
+
+        function dragElement(event, element) { //moves the element
+            elX = window.getComputedStyle(element).left;
+            elY = window.getComputedStyle(element).top;
+
+            element.style.left = `${event.movementX}px`;
+            element.style.left = `${event.movementX}px`;
+        }
+
+        joysticks.foreach((element) => {
+
+            element.addEventListener("mouseDown", (e) => {
+                moving = (event) => dragElement(e, element);
+
+                element.addEventListener("mousemove", moving);
+            });
+
+            element.addEventListener("mouseup", () => {   
+                element.removeEventListener("mousemove");
+            });
+        });
+
+    </script>
+</body>
+
+</html>
