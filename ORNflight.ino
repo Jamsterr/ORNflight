@@ -1,5 +1,6 @@
 //error in vsc but IDE should be fine
 #include <WiFi.h>
+#include <SPI.h>
 
 //port 80 webserver
 WiFiServer server(80);
@@ -55,10 +56,19 @@ void setup() {
         Serial.print("waiting.");
     }
     Serial.println("connected");
+    Serial.println(WiFi.localIP());
     //sensor checks and calibration
 }
 
 void loop() {
+    WiFiClient device = server.available();
+    if(device) {
+        //connection timeout loop
+            //read sent stuff
+            //update values read from action
+            //send back info with new page ig
+            //tutorial might use
+    }
     //webserver connection check
     //look for controller input
     //modify thrust variables per motor 
