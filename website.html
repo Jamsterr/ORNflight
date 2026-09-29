@@ -4,32 +4,16 @@
     <head>
         <meta charset="UTF-8">;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ORNflight 0.2</title>
-        <style>
-            body {
-                background-color: black;
-                color: white;
-            }
-            .joystick {
-                position: relative;
-                width: 10vw;
-                height: 10vw;
-                background-color: #333;
-                border: 1vw solid #444;
-                border-radius: 50%;
-            }
-        </style>
+        <title>ORNflight 0.1</title>
     </head>
 
 <body>
-
     <div class="joystick" id="leftStick" data-x="0" data-y="0"></div>
-
     <div class="joystick" id="rightStick" data-val="0"></div>
 
     <script>
 
-        let joysticks = document.querySelectorAll("joystick");
+        let joysticks = document.getElementsByClassName("joystick");
 
         function dragElement(event, element) { //moves the element
             elX = window.getComputedStyle(element).left;
@@ -39,7 +23,7 @@
             element.style.left = `${event.movementX}px`;
         }
 
-        joysticks.forEach(element => {
+        joysticks.foreach((element) => {
 
             element.addEventListener("mouseDown", (e) => {
                 moving = (event) => dragElement(e, element);
