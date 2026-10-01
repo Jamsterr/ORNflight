@@ -1,9 +1,12 @@
 //error in vsc but IDE should be fine
 #include <WiFi.h>
 #include <SPI.h>
+#include <ESPAsyncWebserver>
+#include <AsyncTCP>
+#include <littleFS>
 
-//port 80 webserver
-WiFiServer server(80);
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
 
 //setup pins and variables
 float targetX, targetY = 0;
@@ -13,17 +16,15 @@ float tuneP = 1;
 float tuneI = 1;
 float tuneD = 1;
 
-//-- pins may be subject to change
-const int SDI = 15;
-const int SDO = 2;
-const int tick = 4;
-const int pick = 16;
+const int MISO = 19;
+const int MOSI = 23;
+const int tick = 18;
+const int pick = 5;
 
 const int motor1 = 13;
 const int motor2 = 12;
 const int motor3 = 14;
 const int motor4 = 27;
-//--
 
 const char* ssid = "placeholderSsid";
 const char* pass = "placeholderPass";
@@ -33,8 +34,8 @@ float readings[20] = { };
 void setup() {
     Serial.begin(115200);
 
-    pinMode(SDI, INPUT);
-    pinMode(SDO, OUTPUT);
+    pinMode(MISO, INPUT);
+    pinMode(MOSI, OUTPUT);
     pinMode(tick, OUTPUT);
     pinMode(pick, OUTPUT);
 
@@ -43,7 +44,7 @@ void setup() {
     pinMode(motor3, OUTPUT);
     pinMode(motor4, OUTPUT);
 
-    //webserver init, connect to device
+    //webserver init, might be replaced with async stuff
     WiFi.mode(WIFI_AP);
     WiFi.softAP(ssid, pass, 1, 1);
 
@@ -51,7 +52,7 @@ void setup() {
     Serial.println(pass);
     Serial.println(WiFi.localIP());  
 
-    while(WiFi.status() != WL_CONNECTED) {
+    while(WiFi.status() != WL_CONNECTED) { //doesnt seem to notice connection
         delay(500);
         Serial.print("waiting.");
     }
@@ -61,18 +62,9 @@ void setup() {
 }
 
 void loop() {
-    WiFiClient device = server.available();
-    if(device) {
-        //connection timeout loop
-            //read sent stuff
-            //update values read from action
-            //send back info with new page ig
-            //tutorial might use
-    }
-    //webserver connection check
-    //look for controller input
-    //modify thrust variables per motor 
+    //webserver connection stuff
     //read sensor data (SPI)
+    //something something websocket reading something idk
     //will probably need a storage of x previous readings for stabilization
     //stabilize()
     delay(500);
@@ -89,10 +81,18 @@ void jaw(int amp) {
 }
 
 void stabilize(float target, float reading) { //handles stabilizing, roll and pitch
+    //trapozoidal rule seems best for integral
     //calc error from desired v actual angle
     //output calculated with error in integral, derivative* and proportional dimensions'
     //translate output value into motor adjustment
     //add high pass filtering for safety
+}
+
+int[] motorTranslate(float deltaX, float deltaY) { //translates deltas to direct motor adjustment
+
+}
+void motorWrite(float motorTL, float motorTR, float motorBL, float motorBR) { 
+
 }
 
 
