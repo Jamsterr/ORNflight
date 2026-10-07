@@ -126,6 +126,7 @@ joystick.stick = joystick.getBoundingClientRect();
 }
 document.addEventListener("DOMContentLoaded", () => {
 setup();
+loadWs();
 });
 function loadWS() { //init and event handling
 websocket = new WebSocket(host);
@@ -205,12 +206,12 @@ report(joy);
 </html>
 )rawliteral";
 
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, int data, size_t len) {
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
     if(type == WS_EVT_CONNECT) {
         Serial.println("ws connected");
     }
     else if(type == WS_EVT_DATA) {
-        serial.println("recieved message");
+        Serial.println("recieved message");
     }
 }
 
