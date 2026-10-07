@@ -168,6 +168,7 @@ topVal = Math.max(topVal, 0);
 element.style.top = `${topVal - parseInt(element.stick.height)/2}px`;
 element.style.left = `${leftVal - parseInt(element.stick.width)/2}px`;
 report(element);
+websocket.send("ping");
 }
 document.addEventListener("touchstart", e => {
 let touch = e.changedTouches[0];
@@ -232,6 +233,15 @@ void setup() {
 
     server.begin();
     //sensor checks and calibration
+}
+
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, int data, size_t len) {
+    if(type == WS_EVT_CONNECT) {
+        Serial.println("ws connected");
+    }
+    else if(type == WS_EVT_DATA) {
+        serial.println("recieved message");
+    }
 }
 
 void loop() {
