@@ -205,6 +205,15 @@ report(joy);
 </html>
 )rawliteral";
 
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, int data, size_t len) {
+    if(type == WS_EVT_CONNECT) {
+        Serial.println("ws connected");
+    }
+    else if(type == WS_EVT_DATA) {
+        serial.println("recieved message");
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -231,17 +240,10 @@ void setup() {
         request->send(200, "text/html", page);
     });
 
+    ws.onEvent(onEvent);
+    server.addHandler(&ws);
     server.begin();
     //sensor checks and calibration
-}
-
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, int data, size_t len) {
-    if(type == WS_EVT_CONNECT) {
-        Serial.println("ws connected");
-    }
-    else if(type == WS_EVT_DATA) {
-        serial.println("recieved message");
-    }
 }
 
 void loop() {
