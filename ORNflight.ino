@@ -84,6 +84,7 @@ background-color: #fff;
 <script>
 let joysticks = document.querySelectorAll(".joystick");
 const host = `ws://${window.location.hostname}/ws`;
+console.log(window.location.hostname, 123);
 let websocket;
 async function screenHandler() {
 let button = document.getElementById("fullscreen");
@@ -126,12 +127,12 @@ joystick.stick = joystick.getBoundingClientRect();
 }
 document.addEventListener("DOMContentLoaded", () => {
 setup();
-loadWs();
+loadWS();
 });
 function loadWS() { //init and event handling
 websocket = new WebSocket(host);
 websocket.onopen = wsOpen;
-websocket.onmessage = wsMessage;
+//websocket.onmessage = wsMessage;
 websocket.onclose = wsClose;
 }
 function wsOpen() {
@@ -156,6 +157,8 @@ joyY += (Math.round(joy.boundry.height*10)) + 2;
 }
 if(Math.abs(joyX) < 400) joyX = 0; //deadzones
 if(Math.abs(joyY) < 400) joyY = 0;
+websocket.send(Math.round(joyY));
+websocket.send(Math.round(joyX));
 }
 function dragElement(touch, element) {     
 let leftVal = touch.clientX;
@@ -169,7 +172,6 @@ topVal = Math.max(topVal, 0);
 element.style.top = `${topVal - parseInt(element.stick.height)/2}px`;
 element.style.left = `${leftVal - parseInt(element.stick.width)/2}px`;
 report(element);
-websocket.send("ping");
 }
 document.addEventListener("touchstart", e => {
 let touch = e.changedTouches[0];
@@ -211,10 +213,12 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
         Serial.println("ws connected");
     }
     else if(type == WS_EVT_DATA) {
-        Serial.println("recieved message");
+            Serial.print("\n");
+        for(int i = 0; i < len; i++) {
+            Serial.print((char)data[i]);
+        }
     }
 }
-
 void setup() {
     Serial.begin(115200);
 

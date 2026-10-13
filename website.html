@@ -92,7 +92,7 @@ loadWS();
 function loadWS() { //init and event handling
 websocket = new WebSocket(host);
 websocket.onopen = wsOpen;
-websocket.onmessage = wsMessage;
+//websocket.onmessage = wsMessage;
 websocket.onclose = wsClose;
 }
 function wsOpen() {
@@ -117,6 +117,8 @@ joyY += (Math.round(joy.boundry.height*10)) + 2;
 }
 if(Math.abs(joyX) < 400) joyX = 0; //deadzones
 if(Math.abs(joyY) < 400) joyY = 0;
+websocket.send(Math.round(joyY));
+websocket.send(Math.round(joyX));
 }
 function dragElement(touch, element) {     
 let leftVal = touch.clientX;
@@ -130,7 +132,6 @@ topVal = Math.max(topVal, 0);
 element.style.top = `${topVal - parseInt(element.stick.height)/2}px`;
 element.style.left = `${leftVal - parseInt(element.stick.width)/2}px`;
 report(element);
-websocket.send("ping");
 }
 document.addEventListener("touchstart", e => {
 let touch = e.changedTouches[0];
