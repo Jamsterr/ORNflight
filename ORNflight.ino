@@ -43,7 +43,7 @@ const char page[] = R"rawliteral(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no">
-<title>ORNflight 0.3</title>
+<title>ORNflight 0.4</title>
 <style>
 body {
 border: none;
@@ -84,7 +84,6 @@ background-color: #fff;
 <script>
 let joysticks = document.querySelectorAll(".joystick");
 const host = `ws://${window.location.hostname}/ws`;
-console.log(window.location.hostname, 123);
 let websocket;
 async function screenHandler() {
 let button = document.getElementById("fullscreen");
@@ -120,6 +119,8 @@ joystick.boundry = joystick.parentElement.getBoundingClientRect();
 joystick.originX = `${joystick.boundry.width/2 - joystick.stick.width/2}px`;
 joystick.originY = `${joystick.boundry.height/2 - joystick.stick.height/2}px`;
 joystick.style.left = joystick.originX;
+joystick.relY = 0;
+joystick.relX = 0;
 if(joystick == joysticks[0]) joystick.style.top = joystick.originY;
 else joystick.style.top = `${joystick.boundry.height - joystick.stick.height/2}px`;
 joystick.stick = joystick.getBoundingClientRect();
@@ -137,28 +138,27 @@ websocket.onclose = wsClose;
 }
 function wsOpen() {
 console.log("ws is open");
-getReadings();
 }
 function wsClose() {
 console.log("ws down");
-setTimeout(loadWs, 2000);
+setTimeout(loadWS, 2000);
 }
 function report(joy) { //rn unformatted
 let stickPlace = joy.getBoundingClientRect();
-let joyX = -1*(stickPlace.left + joy.stick.width/2 - (joy.boundry.left + joy.boundry.width/2)) - 1;
-let joyY = -1*(stickPlace.top + joy.stick.height/2 - (joy.boundry.top + joy.boundry.height/2)) - 1;
+let joyX = -1*(stickPlace.left + joy.stick.width/2 - (joy.boundry.left + joy.boundry.width/2));
+let joyY = -1*(stickPlace.top + joy.stick.height/2 - (joy.boundry.top + joy.boundry.height/2));
 let relX = Math.round(1000* joyX / (joy.boundry.width/2));
 let relY;
 if(joy == joysticks[1]) relY = Math.round(1000*(joyY + joy.boundry.height/2)/joy.boundry.height);
 else relY = Math.round(1000* joyY / (joy.boundry.height/2));
-console.log(relX, relY);
-if(joy == joysticks[1]) { //1D throttle
-joyY += (Math.round(joy.boundry.height*10)) + 2;
-}
-if(Math.abs(joyX) < 400) joyX = 0; //deadzones
-if(Math.abs(joyY) < 400) joyY = 0;
-websocket.send(Math.round(joyY));
-websocket.send(Math.round(joyX));
+if(Math.abs(relX) < 200) relX = 0; //deadzones
+if(joy == joysticks[0] && Math.abs(relY) < 200 || joy == joysticks[1] && Math.abs(relY) < 50 ) relY = 0;
+if(joy.relY != relY) websocket.send("y::" + relY);
+if(joy.relX != relX) websocket.send("x::" + relX);
+joy.relX = relX;
+joy.relY = relY;
+console.log("y::" + relY);
+console.log("x::" + relX);
 }
 function dragElement(touch, element) {     
 let leftVal = touch.clientX;
@@ -214,7 +214,7 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
     }
     else if(type == WS_EVT_DATA) {
             Serial.print("\n");
-        for(int i = 0; i < len; i++) {
+        for(size_t i = 0; i < len; i++) {
             Serial.print((char)data[i]);
         }
     }
